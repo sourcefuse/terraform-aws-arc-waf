@@ -1,8 +1,8 @@
-# terraform-aws-module-template
+# terraform-aws-refarch-waf
 
 ## Overview
 
-SourceFuse AWS Reference Architecture (ARC) Terraform module for managing _________.
+SourceFuse AWS Reference Architecture (ARC) Terraform module for managing WAF.
 
 ## Usage
 
@@ -10,7 +10,7 @@ To see a full example, check out the [main.tf](./example/main.tf) file in the ex
 
 ```hcl
 module "this" {
-  source = "git::https://github.com/sourcefuse/terraform-aws-refarch-<module_name>"
+  source = "git::https://github.com/sourcefuse/terraform-aws-refarch-waf"
 }
 ```
 
@@ -19,12 +19,14 @@ module "this" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.3, < 2.0.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3, < 2.0.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0 |
 
 ## Providers
 
-No providers.
+| Name | Version |
+|------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.8.0 |
 
 ## Modules
 
@@ -32,15 +34,39 @@ No modules.
 
 ## Resources
 
-No resources.
+| Name | Type |
+|------|------|
+| [aws_wafv2_ip_set.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/wafv2_ip_set) | resource |
+| [aws_wafv2_web_acl.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/wafv2_web_acl) | resource |
 
 ## Inputs
 
-No inputs.
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_create_ip_set"></a> [create\_ip\_set](#input\_create\_ip\_set) | A Boolean indicates whether to create aws waf ip set or not | `bool` | `false` | no |
+| <a name="input_create_web_acl"></a> [create\_web\_acl](#input\_create\_web\_acl) | A Boolean indicates whether to create WAF Web ACL or not | `bool` | `true` | no |
+| <a name="input_ip_set_address_version"></a> [ip\_set\_address\_version](#input\_ip\_set\_address\_version) | Specify IPV4 or IPV6.Valid values are IPV4 or IPV6 | `string` | `"IPV4"` | no |
+| <a name="input_ip_set_addresses"></a> [ip\_set\_addresses](#input\_ip\_set\_addresses) | Contains an array of strings that specify one or more IP addresses or blocks of IP addresses in Classless Inter-Domain Routing (CIDR) notation. AWS WAF supports all address ranges for IP versions IPv4 and IPv6 | `list(string)` | `[]` | no |
+| <a name="input_ip_set_description"></a> [ip\_set\_description](#input\_ip\_set\_description) | Description for the IP Set configuration | `string` | `"Terraform managed IP Set configuration"` | no |
+| <a name="input_ip_set_name"></a> [ip\_set\_name](#input\_ip\_set\_name) | A friendly name of the IP set | `string` | `null` | no |
+| <a name="input_ip_set_scope"></a> [ip\_set\_scope](#input\_ip\_set\_scope) | specifies whether this is for an AWS CloudFront distribution or for a regional application. Valid values are CLOUDFRONT or REGIONAL. To work with CloudFront, you must also specify the Region US East | `string` | `"REGIONAL"` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to assign to the resource. If configured with a provider default\_tags configuration block present, tags with matching keys will overwrite those defined at the provider-level. | `any` | n/a | yes |
+| <a name="input_web_acl_custom_response_body"></a> [web\_acl\_custom\_response\_body](#input\_web\_acl\_custom\_response\_body) | Defines custom response bodies that can be referenced by custom\_response actions | `any` | `[]` | no |
+| <a name="input_web_acl_default_action"></a> [web\_acl\_default\_action](#input\_web\_acl\_default\_action) | Action to perform if none of the rules contained in the WebACL match. Options are `allow` or `block` | `string` | n/a | yes |
+| <a name="input_web_acl_description"></a> [web\_acl\_description](#input\_web\_acl\_description) | Description of the WebACL | `string` | `"Terraform managed Web ACL Configuration"` | no |
+| <a name="input_web_acl_name"></a> [web\_acl\_name](#input\_web\_acl\_name) | Name of the WAFv2 Web ACL | `string` | n/a | yes |
+| <a name="input_web_acl_rules"></a> [web\_acl\_rules](#input\_web\_acl\_rules) | Rule blocks used to identify the web requests that you want to allow, block, or count | `any` | n/a | yes |
+| <a name="input_web_acl_scope"></a> [web\_acl\_scope](#input\_web\_acl\_scope) | Specifies whether this is for an AWS CloudFront distribution or for a regional application. Valid values are CLOUDFRONT or REGIONAL | `string` | `"REGIONAL"` | no |
+| <a name="input_web_acl_visibility_config"></a> [web\_acl\_visibility\_config](#input\_web\_acl\_visibility\_config) | Defines and enables Amazon CloudWatch metrics and web request sample collection | <pre>object({<br>    cloudwatch_metrics_enabled = optional(bool, true)<br>    metric_name                = string<br>    sampled_requests_enabled   = optional(bool, true)<br>  })</pre> | n/a | yes |
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_arn"></a> [arn](#output\_arn) | The ARN of the WAF WebACL. |
+| <a name="output_capacity"></a> [capacity](#output\_capacity) | Web ACL capacity units (WCUs) currently being used by this web ACL. |
+| <a name="output_id"></a> [id](#output\_id) | The ID of the WAF WebACL. |
+| <a name="output_tags_all"></a> [tags\_all](#output\_tags\_all) | Map of tags assigned to the resource, including those inherited from the provider default\_tags configuration block. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Versioning  
