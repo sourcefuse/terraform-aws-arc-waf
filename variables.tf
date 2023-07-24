@@ -54,63 +54,27 @@ variable "web_acl_visibility_config" {
 
 variable "web_acl_rules" {
   description = "Rule blocks used to identify the web requests that you want to allow, block, or count"
-  type        = any // TODO - improve this if possible. May not be since the types for the different acl's are not similar
-  #  type        = object({
-  #    name = string
-  #    priority = number
-  #
-  #
-  #    statement = object({
-  #      rate_based_statement = optional(object({
-  #        aggregate_key_type = optional(string, "IP")
-  #        limit = number
-  #      }), {})
-  #
-  #      ip_set_reference_statement = optional(object({
-  #        arn = string
-  #        ip_set_forwarded_ip_config = optional(list(object({
-  #
-  #        }))
-  #      }), {})
-  #    })
-  #  })
+  type        = any
 }
 
 ################################################################
 ## ip set
 ################################################################
-variable "create_ip_set" {
-  type        = bool
-  description = "A Boolean indicates whether to create aws waf ip set or not"
-  default     = false
-}
-
-variable "ip_set_name" {
-  type        = string
-  description = "A friendly name of the IP set"
-  default     = null
-}
-
-variable "ip_set_description" {
-  type        = string
-  description = "Description for the IP Set configuration"
-  default     = "Terraform managed IP Set configuration"
-}
-
-variable "ip_set_scope" {
-  type        = string
-  description = "specifies whether this is for an AWS CloudFront distribution or for a regional application. Valid values are CLOUDFRONT or REGIONAL. To work with CloudFront, you must also specify the Region US East"
-  default     = "REGIONAL"
-}
-
-variable "ip_set_address_version" {
-  type        = string
-  description = "Specify IPV4 or IPV6.Valid values are IPV4 or IPV6"
-  default     = "IPV4"
-}
-
-variable "ip_set_addresses" {
-  type        = list(string)
-  description = "Contains an array of strings that specify one or more IP addresses or blocks of IP addresses in Classless Inter-Domain Routing (CIDR) notation. AWS WAF supports all address ranges for IP versions IPv4 and IPv6"
+variable "ip_set" {
+  type = list(object({
+    name               = string
+    description        = optional(string, "Terraform managed IP Set configuration")
+    scope              = optional(string, "REGIONAL")
+    ip_address_version = optional(string, "IPV4")
+    addresses          = optional(list(string, []))
+  }))
+  description = <<EOF
+    Configuration for WAFv2 IP Set.
+      * name: A friendly name of the IP set.
+      * description: A friendly description of the IP set. Default is "Terraform managed IP Set configuration."
+      * scope: Specifies whether this is for an AWS CloudFront distribution or for a regional application. Valid values are CLOUDFRONT or REGIONAL. Default is "REGIONAL."
+      * ip_address_version = Specify IPV4 or IPV6. Valid values are IPV4 or IPV6. Default is "IPV4."
+      * addresses = Contains an array of strings that specifies zero or more IP addresses or blocks of IP addresses. All addresses must be specified using Classless Inter-Domain Routing (CIDR) notation. WAF supports all IPv4 and IPv6 CIDR ranges except for /0.
+  EOF
   default     = []
 }

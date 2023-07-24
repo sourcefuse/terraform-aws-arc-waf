@@ -466,21 +466,25 @@ resource "aws_wafv2_web_acl" "this" {
   tags = merge(var.tags, tomap({
     Name = var.web_acl_name
   }))
+
+  depends_on = [
+    aws_wafv2_ip_set.this
+  ]
 }
 
 ################################################################
 ## ip set
 ################################################################
 resource "aws_wafv2_ip_set" "this" {
-  count = var.create_ip_set == true ? 1 : 0
+  for_each = { for x in var.ip_set : x.name => x }
 
-  name               = var.ip_set_name
-  description        = var.ip_set_description
-  scope              = var.ip_set_scope
-  ip_address_version = var.ip_set_address_version
-  addresses          = var.ip_set_addresses
+  name               = each.value.name
+  description        = each.value.description
+  scope              = each.value.scope
+  ip_address_version = each.value.ip_address_version
+  addresses          = each.value.addresses
 
   tags = merge(var.tags, tomap({
-    Name = var.ip_set_name
+    Name = each.value.name
   }))
 }

@@ -1,162 +1,149 @@
-waf = [
+web_acl_rules = [
+  ## AWS-AWSManagedRulesAmazonIpReputationList
   {
-    web_acl_name           = "example-dev-waf"
-    web_acl_description    = "Example Web ACL configuration"
-    web_acl_scope          = "REGIONAL"
-    web_acl_default_action = "allow"
+    name     = "AWS-AWSManagedRulesAmazonIpReputationList"
+    priority = 0
 
-    web_acl_visibility_config = {
-      metric_name = "example-dev-waf"
-    }
+    override_action = [{ none = [{}] }]
 
-    web_acl_rules = [
-      ## AWS-AWSManagedRulesAmazonIpReputationList
+    visibility_config = [
       {
-        name     = "AWS-AWSManagedRulesAmazonIpReputationList"
-        priority = 0
+        cloudwatch_metrics_enabled = true
+        metric_name                = "AWS-AWSManagedRulesAmazonIpReputationList"
+        sampled_requests_enabled   = true
+      }
+    ]
 
-        override_action = [{ none = [{}] }]
-
-        visibility_config = [
+    statement = [
+      {
+        managed_rule_group_statement = [
           {
-            cloudwatch_metrics_enabled = true
-            metric_name                = "AWS-AWSManagedRulesAmazonIpReputationList"
-            sampled_requests_enabled   = true
+            name        = "AWSManagedRulesAmazonIpReputationList"
+            vendor_name = "AWS"
           }
         ]
+      }
+    ]
+  },
 
-        statement = [
+  ## AWS-AWSManagedRulesKnownBadInputsRuleSet
+  {
+    name     = "AWS-AWSManagedRulesKnownBadInputsRuleSet"
+    priority = 1
+
+    override_action = [{ none = [{}] }]
+
+    visibility_config = [
+      {
+        cloudwatch_metrics_enabled = true
+        metric_name                = "AWS-AWSManagedRulesKnownBadInputsRuleSet"
+        sampled_requests_enabled   = true
+      }
+    ]
+
+    statement = [
+      {
+        managed_rule_group_statement = [
           {
-            managed_rule_group_statement = [
+            name        = "AWSManagedRulesKnownBadInputsRuleSet"
+            vendor_name = "AWS"
+          }
+        ]
+      }
+    ]
+  },
+
+  ## AWS-AWSManagedRulesWindowsRuleSet
+  {
+    name     = "AWS-AWSManagedRulesWindowsRuleSet"
+    priority = 2
+
+    override_action = [{ none = [{}] }]
+
+    visibility_config = [
+      {
+        cloudwatch_metrics_enabled = true
+        metric_name                = "AWS-AWSManagedRulesWindowsRuleSet"
+        sampled_requests_enabled   = true
+      }
+    ]
+
+    statement = [
+      {
+        managed_rule_group_statement = [
+          {
+            name        = "AWSManagedRulesWindowsRuleSet"
+            vendor_name = "AWS"
+
+            excluded_rule = [
               {
-                name        = "AWSManagedRulesAmazonIpReputationList"
-                vendor_name = "AWS"
+                name = "WindowsShellCommands_BODY"
               }
             ]
           }
         ]
-      },
+      }
+    ]
+  },
 
-      ## AWS-AWSManagedRulesKnownBadInputsRuleSet
+  ## AWS-AWSManagedRulesCommonRuleSet
+  {
+    name     = "AWS-AWSManagedRulesCommonRuleSet"
+    priority = 3
+
+    override_action = [{ none = [{}] }]
+
+    visibility_config = [
       {
-        name     = "AWS-AWSManagedRulesKnownBadInputsRuleSet"
-        priority = 1
+        cloudwatch_metrics_enabled = true
+        metric_name                = "AWS-AWSManagedRulesCommonRuleSet"
+        sampled_requests_enabled   = true
+      }
+    ]
 
-        override_action = [{ none = [{}] }]
-
-        visibility_config = [
-          {
-            cloudwatch_metrics_enabled = true
-            metric_name                = "AWS-AWSManagedRulesKnownBadInputsRuleSet"
-            sampled_requests_enabled   = true
-          }
-        ]
-
-        statement = [
-          {
-            managed_rule_group_statement = [
-              {
-                name        = "AWSManagedRulesKnownBadInputsRuleSet"
-                vendor_name = "AWS"
-              }
-            ]
-          }
-        ]
-      },
-
-      ## AWS-AWSManagedRulesWindowsRuleSet
+    statement = [
       {
-        name     = "AWS-AWSManagedRulesWindowsRuleSet"
-        priority = 2
+        managed_rule_group_statement = [{
+          name        = "AWSManagedRulesCommonRuleSet"
+          vendor_name = "AWS"
 
-        override_action = [{ none = [{}] }]
-
-        visibility_config = [
-          {
-            cloudwatch_metrics_enabled = true
-            metric_name                = "AWS-AWSManagedRulesWindowsRuleSet"
-            sampled_requests_enabled   = true
-          }
-        ]
-
-        statement = [
-          {
-            managed_rule_group_statement = [
-              {
-                name        = "AWSManagedRulesWindowsRuleSet"
-                vendor_name = "AWS"
-
-                excluded_rule = [
-                  {
-                    name = "WindowsShellCommands_BODY"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-
-      ## AWS-AWSManagedRulesCommonRuleSet
-      {
-        name     = "AWS-AWSManagedRulesCommonRuleSet"
-        priority = 3
-
-        override_action = [{ none = [{}] }]
-
-        visibility_config = [
-          {
-            cloudwatch_metrics_enabled = true
-            metric_name                = "AWS-AWSManagedRulesCommonRuleSet"
-            sampled_requests_enabled   = true
-          }
-        ]
-
-        statement = [
-          {
-            managed_rule_group_statement = [{
-              name        = "AWSManagedRulesCommonRuleSet"
-              vendor_name = "AWS"
-
-              excluded_rule = [
+          excluded_rule = [
+            {
+              name = "GenericRFI_BODY"
+            },
+            {
+              name = "GenericRFI_QUERYARGUMENTS"
+            },
+            {
+              name = "NoUserAgent_HEADER"
+            },
+            {
+              name = "SizeRestrictions_BODY"
+            },
+            {
+              name = "SizeRestrictions_Cookie_HEADER"
+            },
+            {
+              name = "SizeRestrictions_QUERYSTRING"
+            }
+          ]
+          scope_down_statement = [
+            {
+              not_statement = [
                 {
-                  name = "GenericRFI_BODY"
-                },
-                {
-                  name = "GenericRFI_QUERYARGUMENTS"
-                },
-                {
-                  name = "NoUserAgent_HEADER"
-                },
-                {
-                  name = "SizeRestrictions_BODY"
-                },
-                {
-                  name = "SizeRestrictions_Cookie_HEADER"
-                },
-                {
-                  name = "SizeRestrictions_QUERYSTRING"
-                }
-              ]
-              scope_down_statement = [
-                {
-                  not_statement = [
+                  statement = [
                     {
-                      statement = [
+                      byte_match_statement = [
                         {
-                          byte_match_statement = [
+                          positional_constraint = "CONTAINS"
+                          search_string         = "/api/v2"
+
+                          field_to_match = [{ uri_path = [{}] }]
+
+                          text_transformation = [
                             {
-                              positional_constraint = "CONTAINS"
-                              search_string         = "/api/v2"
-
-                              field_to_match = [{ uri_path = [{}] }]
-
-                              text_transformation = [
-                                {
-                                  priority = 0
-                                  type     = "NONE"
-                                }
-                              ]
+                              priority = 0
+                              type     = "NONE"
                             }
                           ]
                         }
@@ -165,44 +152,44 @@ waf = [
                   ]
                 }
               ]
-              }
-            ]
+            }
+          ]
           }
         ]
-      },
-
-      ## AWS-AWSManagedRulesSQLiRuleSet
-      {
-        name     = "AWS-AWSManagedRulesSQLiRuleSet"
-        priority = 4
-
-        override_action = [{ none = [{}] }]
-
-        visibility_config = [
-          {
-            cloudwatch_metrics_enabled = true
-            metric_name                = "AWS-AWSManagedRulesSQLiRuleSet"
-            sampled_requests_enabled   = true
-          }
-        ]
-
-        statement = [
-          {
-            managed_rule_group_statement = [
-              {
-                name        = "AWSManagedRulesSQLiRuleSet"
-                vendor_name = "AWS"
-
-                excluded_rule = [
-                  {
-                    name = "SQLi_QUERYARGUMENTS"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
+      }
     ]
-  }
+  },
+
+  ## AWS-AWSManagedRulesSQLiRuleSet
+  {
+    name     = "AWS-AWSManagedRulesSQLiRuleSet"
+    priority = 4
+
+    override_action = [{ none = [{}] }]
+
+    visibility_config = [
+      {
+        cloudwatch_metrics_enabled = true
+        metric_name                = "AWS-AWSManagedRulesSQLiRuleSet"
+        sampled_requests_enabled   = true
+      }
+    ]
+
+    statement = [
+      {
+        managed_rule_group_statement = [
+          {
+            name        = "AWSManagedRulesSQLiRuleSet"
+            vendor_name = "AWS"
+
+            excluded_rule = [
+              {
+                name = "SQLi_QUERYARGUMENTS"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
 ]

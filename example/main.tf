@@ -33,24 +33,27 @@ module "tags" {
 module "waf" {
   source = "../"
 
-  for_each = { for x in var.waf : x.name => x }
-
   ## web acl
-  create_web_acl            = true
-  web_acl_name              = each.value.web_acl_name
-  web_acl_description       = each.value.web_acl_description
-  web_acl_scope             = each.value.web_acl_scope
-  web_acl_default_action    = each.value.web_acl_default_action
-  web_acl_visibility_config = each.value.web_acl_visibility_config
-  web_acl_rules             = each.value.web_acl_rules
+  create_web_acl         = true
+  web_acl_name           = "${var.namespace}-${var.environment}-waf-web-acl"
+  web_acl_description    = "Terraform managed Web ACL Configuration"
+  web_acl_scope          = "REGIONAL"
+  web_acl_default_action = "block"
+  web_acl_visibility_config = {
+    metric_name = "${var.namespace}-${var.environment}-waf-web-acl"
+  }
+  web_acl_rules = var.web_acl_rules
 
   ## ip set
-  create_ip_set          = false
-  ip_set_name            = each.value.ip_set_name
-  ip_set_description     = each.value.ip_set_description
-  ip_set_scope           = each.value.ip_set_scope
-  ip_set_address_version = each.value.ip_set_address_version
-  ip_set_addresses       = each.value.ip_set_addresses
+  ip_set = [
+    {
+      name               = "example-ip-set"
+      description        = "Example description"
+      scope              = "REGIONAL"
+      ip_address_version = "IPV4"
+      addresses          = []
+    }
+  ]
 
   tags = module.tags.tags
 }
