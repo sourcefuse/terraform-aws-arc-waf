@@ -65,7 +65,7 @@ variable "association_resource_arns" {
     The Amazon Resource Name (ARN) of the resource to associate with the web ACL.
     This must be an ARN of an Application Load Balancer, an Amazon API Gateway stage, or an Amazon Cognito User Pool.
   EOF
-  default = []
+  default     = []
 }
 
 ################################################################
