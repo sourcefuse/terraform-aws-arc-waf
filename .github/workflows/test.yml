@@ -14,7 +14,6 @@ jobs:
   tflint:
     runs-on:
       - arc
-      - dev
     name: tflint
     steps:
       - uses: actions/checkout@master
