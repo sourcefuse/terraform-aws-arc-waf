@@ -7,6 +7,10 @@ on:  # yamllint disable-line rule:truthy
       - '**'
       - '!main'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ## run pre-commit
   pre-commit:
