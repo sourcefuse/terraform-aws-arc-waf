@@ -66,7 +66,7 @@ variable "ip_set" {
     description        = optional(string, "Terraform managed IP Set configuration")
     scope              = optional(string, "REGIONAL")
     ip_address_version = optional(string, "IPV4")
-    addresses          = optional(list(string, []))
+    addresses          = optional(list(string), [])
   }))
   description = <<EOF
     Configuration for WAFv2 IP Set.
