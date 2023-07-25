@@ -61,6 +61,7 @@ No modules.
 | <a name="output_arn"></a> [arn](#output\_arn) | The ARN of the WAF WebACL. |
 | <a name="output_capacity"></a> [capacity](#output\_capacity) | Web ACL capacity units (WCUs) currently being used by this web ACL. |
 | <a name="output_id"></a> [id](#output\_id) | The ID of the WAF WebACL. |
+| <a name="output_ip_set_arn"></a> [ip\_set\_arn](#output\_ip\_set\_arn) | The IP Set ARN |
 | <a name="output_tags_all"></a> [tags\_all](#output\_tags\_all) | Map of tags assigned to the resource, including those inherited from the provider default\_tags configuration block. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
