@@ -14,7 +14,6 @@ jobs:
   security:
     runs-on:
       - arc
-      - dev
     name: snyk
     steps:
       - name: checkout

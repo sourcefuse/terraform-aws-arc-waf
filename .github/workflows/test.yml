@@ -35,7 +35,6 @@ jobs:
   checkov:
     runs-on:
       - arc
-      - dev
     name: checkov
     steps:
       - uses: actions/checkout@master
