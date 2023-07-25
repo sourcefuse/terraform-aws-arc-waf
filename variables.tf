@@ -73,8 +73,8 @@ variable "ip_set" {
       * name: A friendly name of the IP set.
       * description: A friendly description of the IP set. Default is "Terraform managed IP Set configuration."
       * scope: Specifies whether this is for an AWS CloudFront distribution or for a regional application. Valid values are CLOUDFRONT or REGIONAL. Default is "REGIONAL."
-      * ip_address_version = Specify IPV4 or IPV6. Valid values are IPV4 or IPV6. Default is "IPV4."
-      * addresses = Contains an array of strings that specifies zero or more IP addresses or blocks of IP addresses. All addresses must be specified using Classless Inter-Domain Routing (CIDR) notation. WAF supports all IPv4 and IPv6 CIDR ranges except for /0.
+      * ip_address_version: Specify IPV4 or IPV6. Valid values are IPV4 or IPV6. Default is "IPV4."
+      * addresses: Contains an array of strings that specifies zero or more IP addresses or blocks of IP addresses. All addresses must be specified using Classless Inter-Domain Routing (CIDR) notation. WAF supports all IPv4 and IPv6 CIDR ranges except for /0.
   EOF
   default     = []
 }
