@@ -54,9 +54,18 @@ variable "web_acl_visibility_config" {
 }
 
 variable "web_acl_rules" {
-  description = "Rule blocks used to identify the web requests that you want to allow, block, or count"
   type        = any
+  description = "Rule blocks used to identify the web requests that you want to allow, block, or count"
   default     = []
+}
+
+variable "association_resource_arns" {
+  type        = list(string)
+  description = <<-EOF
+    The Amazon Resource Name (ARN) of the resource to associate with the web ACL.
+    This must be an ARN of an Application Load Balancer, an Amazon API Gateway stage, or an Amazon Cognito User Pool.
+  EOF
+  default = []
 }
 
 ################################################################
@@ -70,7 +79,7 @@ variable "ip_set" {
     ip_address_version = optional(string, "IPV4")
     addresses          = optional(list(string), [])
   }))
-  description = <<EOF
+  description = <<-EOF
     Configuration for WAFv2 IP Set.
       * name: A friendly name of the IP set.
       * description: A friendly description of the IP set. Default is "Terraform managed IP Set configuration."

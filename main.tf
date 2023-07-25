@@ -15,6 +15,7 @@ terraform {
 ################################################################
 ## web acl
 ################################################################
+## web acl
 resource "aws_wafv2_web_acl" "this" {
   count = var.create_web_acl == true ? 1 : 0
 
@@ -470,6 +471,14 @@ resource "aws_wafv2_web_acl" "this" {
   depends_on = [
     aws_wafv2_ip_set.this
   ]
+}
+
+## web association
+resource "aws_wafv2_web_acl_association" "this" {
+  for_each = toset(var.association_resource_arns)
+
+  resource_arn = each.value
+  web_acl_arn  = one(aws_wafv2_web_acl.this[*].arn)
 }
 
 ################################################################
