@@ -129,7 +129,6 @@ resource "aws_wafv2_web_acl" "this" {
         }
       }
 
-
       dynamic "statement" {
         for_each = lookup(rule.value, "statement", [])
 
@@ -282,6 +281,94 @@ resource "aws_wafv2_web_acl" "this" {
                       }
                     }
                   }
+
+                  dynamic "label_match_statement" {
+                    for_each = lookup(statement.value, "label_match_statement", [])
+
+                    content {
+                      scope = label_match_statement.value.scope
+                      key   = label_match_statement.value.key
+                    }
+                  }
+
+                  dynamic "xss_match_statement" {
+                    for_each = lookup(statement.value, "xss_match_statement", [])
+
+                    content {
+                      dynamic "field_to_match" {
+                        for_each = lookup(xss_match_statement.value, "field_to_match", [])
+
+                        content {
+                          dynamic "body" {
+                            for_each = lookup(field_to_match.value, "body", [])
+
+                            content {
+                              oversize_handling = body.value.oversize_handling
+                            }
+                          }
+
+                          dynamic "uri_path" {
+                            for_each = lookup(field_to_match.value, "uri_path", [])
+
+                            content {}
+                          }
+
+                          dynamic "query_string" {
+                            for_each = lookup(field_to_match.value, "query_string", [])
+
+                            content {}
+                          }
+
+                          dynamic "single_header" {
+                            for_each = lookup(field_to_match.value, "single_header", [])
+
+                            content {
+                              name = lookup(single_header.value, "name", null)
+                            }
+                          }
+                        }
+                      }
+
+                      dynamic "text_transformation" {
+                        for_each = lookup(xss_match_statement.value, "text_transformation")
+
+                        content {
+                          priority = lookup(text_transformation.value, "priority")
+                          type     = lookup(text_transformation.value, "type")
+                        }
+                      }
+                    }
+                  }
+
+                  dynamic "byte_match_statement" {
+                    for_each = lookup(statement.value, "byte_match_statement", [])
+
+                    content {
+                      positional_constraint = lookup(byte_match_statement.value, "positional_constraint")
+                      search_string         = lookup(byte_match_statement.value, "search_string")
+
+                      dynamic "field_to_match" {
+                        for_each = lookup(byte_match_statement.value, "field_to_match", [])
+
+                        content {
+                          dynamic "uri_path" {
+                            for_each = lookup(field_to_match.value, "uri_path", [])
+
+                            content {}
+                          }
+                        }
+                      }
+
+                      dynamic "text_transformation" {
+                        for_each = lookup(byte_match_statement.value, "text_transformation")
+
+                        content {
+                          priority = lookup(text_transformation.value, "priority")
+                          type     = lookup(text_transformation.value, "type")
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -329,11 +416,13 @@ resource "aws_wafv2_web_acl" "this" {
 
                             content {}
                           }
+
                           dynamic "query_string" {
                             for_each = lookup(field_to_match.value, "query_string", [])
 
                             content {}
                           }
+
                           dynamic "single_header" {
                             for_each = lookup(field_to_match.value, "single_header", [])
 
@@ -365,6 +454,30 @@ resource "aws_wafv2_web_acl" "this" {
             content {
               name        = lookup(managed_rule_group_statement.value, "name")
               vendor_name = lookup(managed_rule_group_statement.value, "vendor_name")
+
+              dynamic "rule_action_override" {
+                for_each = lookup(managed_rule_group_statement.value, "rule_action_override", [])
+
+                content {
+                  name = rule_action_override.value.name
+
+                  dynamic "action_to_use" {
+                    for_each = try(rule_action_override.value.action, null) == "count" ? [1] : []
+
+                    content {
+                      count {}
+                    }
+                  }
+
+                  dynamic "action_to_use" {
+                    for_each = try(rule_action_override.value.action, null) == "allow" ? [1] : []
+
+                    content {
+                      allow {}
+                    }
+                  }
+                }
+              }
 
               dynamic "scope_down_statement" {
                 for_each = lookup(managed_rule_group_statement.value, "scope_down_statement", [])
@@ -455,6 +568,23 @@ resource "aws_wafv2_web_acl" "this" {
                       }
                     }
                   }
+                }
+              }
+            }
+          }
+
+          dynamic "geo_match_statement" {
+            for_each = lookup(statement.value, "geo_match_statement", [])
+
+            content {
+              country_codes = geo_match_statement.value.country_codes
+
+              dynamic "forwarded_ip_config" {
+                for_each = lookup(geo_match_statement.value, "forwarded_ip_config", [])
+
+                content {
+                  fallback_behavior = forwarded_ip_config.value.fallback_behavior
+                  header_name       = forwarded_ip_config.value.header_name
                 }
               }
             }
