@@ -10,8 +10,7 @@ jobs:
   ## tag
   tag:
     runs-on:
-      - refarch
-      - dev
+      - arc
     steps:
       - uses: actions/checkout@v2
 
