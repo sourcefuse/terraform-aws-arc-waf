@@ -15,8 +15,7 @@ jobs:
   ## run pre-commit
   pre-commit:
     name: Run pre-commit checks
-    runs-on:
-      - arc
+    runs-on: ubuntu-latest
     permissions:
       contents: write
 
