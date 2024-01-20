@@ -7,7 +7,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 5.0"
+      version = ">= 4.0"
     }
   }
 }
@@ -273,6 +273,37 @@ resource "aws_wafv2_web_acl" "this" {
                                   fallback_behavior = lookup(ip_set_forwarded_ip_config.value, "fallback_behavior")
                                   header_name       = lookup(ip_set_forwarded_ip_config.value, "header_name")
                                   position          = lookup(ip_set_forwarded_ip_config.value, "position")
+                                }
+                              }
+                            }
+                          }
+
+                          dynamic "regex_match_statement" {
+                            for_each = lookup(statement.value, "regex_match_statement", [])
+
+                            content {
+                              regex_string = lookup(regex_match_statement.value, "regex_string")
+
+                              dynamic "field_to_match" {
+                                for_each = lookup(regex_match_statement.value, "field_to_match", [])
+
+                                content {
+                                  dynamic "single_header" {
+                                    for_each = lookup(field_to_match.value, "single_header", [])
+
+                                    content {
+                                      name = lookup(single_header.value, "name")
+                                    }
+                                  }
+                                }
+                              }
+
+                              dynamic "text_transformation" {
+                                for_each = lookup(regex_match_statement.value, "text_transformation")
+
+                                content {
+                                  priority = lookup(text_transformation.value, "priority")
+                                  type     = lookup(text_transformation.value, "type")
                                 }
                               }
                             }
