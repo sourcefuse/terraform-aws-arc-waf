@@ -17,7 +17,7 @@ No providers.
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_tags"></a> [tags](#module\_tags) | sourcefuse/arc-tags/aws | 1.2.3 |
-| <a name="module_waf"></a> [waf](#module\_waf) | sourcefuse/arc-waf/aws | 0.0.4 |
+| <a name="module_waf"></a> [waf](#module\_waf) | ../ | n/a |
 
 ## Resources
 

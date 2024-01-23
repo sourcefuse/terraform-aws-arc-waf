@@ -31,8 +31,8 @@ module "tags" {
 ## waf
 ################################################################################
 module "waf" {
-  source  = "sourcefuse/arc-waf/aws"
-  version = "0.0.4"
+  source = "../"
+
   ## web acl
   create_web_acl         = true
   web_acl_name           = "${var.namespace}-${var.environment}-waf-web-acl"
