@@ -69,7 +69,7 @@ This example will create:
 
 A Web ACL which acts as a firewall to control traffic to or from a service.
 
-The Web ACL is configured with a default action of block, meaning it will block requests that match any of the conditions in the web_acl_rules variable. 
+The Web ACL is configured with a default action of block, meaning it will block requests that match any of the conditions in the web_acl_rules variable.
 
 It also creates an IP set, which is a list of IP addresses from which AWS WAF should allow or block requests.
 
