@@ -45,9 +45,9 @@ resource "aws_wafv2_web_acl" "this" {
     for_each = length(var.web_acl_custom_response_body) > 0 ? var.web_acl_custom_response_body : []
 
     content {
-      key          = lookup(custom_response_body.value, "key")
-      content      = lookup(custom_response_body.value, "content")
-      content_type = lookup(custom_response_body.value, "content_type")
+      key          = lookup(custom_response_body.value, "key", null)
+      content      = lookup(custom_response_body.value, "content", null)
+      content_type = lookup(custom_response_body.value, "content_type", null)
     }
   }
 
@@ -55,8 +55,8 @@ resource "aws_wafv2_web_acl" "this" {
     for_each = var.web_acl_rules
 
     content {
-      name     = lookup(rule.value, "name")
-      priority = lookup(rule.value, "priority")
+      name     = lookup(rule.value, "name", null)
+      priority = lookup(rule.value, "priority", null)
 
       dynamic "visibility_config" {
         for_each = lookup(rule.value, "visibility_config", [])
@@ -125,7 +125,7 @@ resource "aws_wafv2_web_acl" "this" {
         for_each = lookup(rule.value, "rule_label", [])
 
         content {
-          name = lookup(rule_label.value, "name")
+          name = lookup(rule_label.value, "name", null)
         }
       }
 
@@ -138,7 +138,7 @@ resource "aws_wafv2_web_acl" "this" {
 
             content {
               aggregate_key_type = lookup(rate_based_statement.value, "aggregate_key_type", null)
-              limit              = lookup(rate_based_statement.value, "limit")
+              limit              = lookup(rate_based_statement.value, "limit", {})
 
               dynamic "scope_down_statement" {
                 for_each = lookup(rate_based_statement.value, "scope_down_statement", [])
@@ -156,15 +156,15 @@ resource "aws_wafv2_web_acl" "this" {
                             for_each = lookup(statement.value, "ip_set_reference_statement", [])
 
                             content {
-                              arn = lookup(ip_set_reference_statement.value, "arn")
+                              arn = lookup(ip_set_reference_statement.value, "arn", null)
 
                               dynamic "ip_set_forwarded_ip_config" {
                                 for_each = lookup(ip_set_reference_statement.value, "ip_set_forwarded_ip_config", [])
 
                                 content {
-                                  fallback_behavior = lookup(ip_set_forwarded_ip_config.value, "fallback_behavior")
-                                  header_name       = lookup(ip_set_forwarded_ip_config.value, "header_name")
-                                  position          = lookup(ip_set_forwarded_ip_config.value, "position")
+                                  fallback_behavior = lookup(ip_set_forwarded_ip_config.value, "fallback_behavior", null)
+                                  header_name       = lookup(ip_set_forwarded_ip_config.value, "header_name", null)
+                                  position          = lookup(ip_set_forwarded_ip_config.value, "position", null)
                                 }
                               }
                             }
@@ -174,8 +174,8 @@ resource "aws_wafv2_web_acl" "this" {
                             for_each = lookup(statement.value, "byte_match_statement", [])
 
                             content {
-                              positional_constraint = lookup(byte_match_statement.value, "positional_constraint")
-                              search_string         = lookup(byte_match_statement.value, "search_string")
+                              positional_constraint = lookup(byte_match_statement.value, "positional_constraint", null)
+                              search_string         = lookup(byte_match_statement.value, "search_string", null)
 
                               dynamic "field_to_match" {
                                 for_each = lookup(byte_match_statement.value, "field_to_match", [])
@@ -190,11 +190,11 @@ resource "aws_wafv2_web_acl" "this" {
                               }
 
                               dynamic "text_transformation" {
-                                for_each = lookup(byte_match_statement.value, "text_transformation")
+                                for_each = lookup(byte_match_statement.value, "text_transformation", [])
 
                                 content {
-                                  priority = lookup(text_transformation.value, "priority")
-                                  type     = lookup(text_transformation.value, "type")
+                                  priority = lookup(text_transformation.value, "priority", null)
+                                  type     = lookup(text_transformation.value, "type", null)
                                 }
                               }
                             }
@@ -212,15 +212,15 @@ resource "aws_wafv2_web_acl" "this" {
             for_each = lookup(statement.value, "ip_set_reference_statement", [])
 
             content {
-              arn = lookup(ip_set_reference_statement.value, "arn")
+              arn = lookup(ip_set_reference_statement.value, "arn", null)
 
               dynamic "ip_set_forwarded_ip_config" {
                 for_each = lookup(ip_set_reference_statement.value, "ip_set_forwarded_ip_config", [])
 
                 content {
-                  fallback_behavior = lookup(ip_set_forwarded_ip_config.value, "fallback_behavior")
-                  header_name       = lookup(ip_set_forwarded_ip_config.value, "header_name")
-                  position          = lookup(ip_set_forwarded_ip_config.value, "position")
+                  fallback_behavior = lookup(ip_set_forwarded_ip_config.value, "fallback_behavior", null)
+                  header_name       = lookup(ip_set_forwarded_ip_config.value, "header_name", null)
+                  position          = lookup(ip_set_forwarded_ip_config.value, "position", null)
                 }
               }
             }
@@ -238,15 +238,15 @@ resource "aws_wafv2_web_acl" "this" {
                     for_each = lookup(statement.value, "ip_set_reference_statement", [])
 
                     content {
-                      arn = lookup(ip_set_reference_statement.value, "arn")
+                      arn = lookup(ip_set_reference_statement.value, "arn", null)
 
                       dynamic "ip_set_forwarded_ip_config" {
                         for_each = lookup(ip_set_reference_statement.value, "ip_set_forwarded_ip_config", [])
 
                         content {
-                          fallback_behavior = lookup(ip_set_forwarded_ip_config.value, "fallback_behavior")
-                          header_name       = lookup(ip_set_forwarded_ip_config.value, "header_name")
-                          position          = lookup(ip_set_forwarded_ip_config.value, "position")
+                          fallback_behavior = lookup(ip_set_forwarded_ip_config.value, "fallback_behavior", null)
+                          header_name       = lookup(ip_set_forwarded_ip_config.value, "header_name", null)
+                          position          = lookup(ip_set_forwarded_ip_config.value, "position", null)
                         }
                       }
                     }
@@ -264,15 +264,15 @@ resource "aws_wafv2_web_acl" "this" {
                             for_each = lookup(statement.value, "ip_set_reference_statement", [])
 
                             content {
-                              arn = lookup(ip_set_reference_statement.value, "arn")
+                              arn = lookup(ip_set_reference_statement.value, "arn", null)
 
                               dynamic "ip_set_forwarded_ip_config" {
                                 for_each = lookup(ip_set_reference_statement.value, "ip_set_forwarded_ip_config", [])
 
                                 content {
-                                  fallback_behavior = lookup(ip_set_forwarded_ip_config.value, "fallback_behavior")
-                                  header_name       = lookup(ip_set_forwarded_ip_config.value, "header_name")
-                                  position          = lookup(ip_set_forwarded_ip_config.value, "position")
+                                  fallback_behavior = lookup(ip_set_forwarded_ip_config.value, "fallback_behavior", null)
+                                  header_name       = lookup(ip_set_forwarded_ip_config.value, "header_name", null)
+                                  position          = lookup(ip_set_forwarded_ip_config.value, "position", null)
                                 }
                               }
                             }
@@ -282,7 +282,7 @@ resource "aws_wafv2_web_acl" "this" {
                             for_each = lookup(statement.value, "regex_match_statement", [])
 
                             content {
-                              regex_string = lookup(regex_match_statement.value, "regex_string")
+                              regex_string = lookup(regex_match_statement.value, "regex_string", null)
 
                               dynamic "field_to_match" {
                                 for_each = lookup(regex_match_statement.value, "field_to_match", [])
@@ -292,18 +292,18 @@ resource "aws_wafv2_web_acl" "this" {
                                     for_each = lookup(field_to_match.value, "single_header", [])
 
                                     content {
-                                      name = lookup(single_header.value, "name")
+                                      name = lookup(single_header.value, "name", null)
                                     }
                                   }
                                 }
                               }
 
                               dynamic "text_transformation" {
-                                for_each = lookup(regex_match_statement.value, "text_transformation")
+                                for_each = lookup(regex_match_statement.value, "text_transformation", [])
 
                                 content {
-                                  priority = lookup(text_transformation.value, "priority")
-                                  type     = lookup(text_transformation.value, "type")
+                                  priority = lookup(text_transformation.value, "priority", null)
+                                  type     = lookup(text_transformation.value, "type", null)
                                 }
                               }
                             }
@@ -361,11 +361,11 @@ resource "aws_wafv2_web_acl" "this" {
                       }
 
                       dynamic "text_transformation" {
-                        for_each = lookup(xss_match_statement.value, "text_transformation")
+                        for_each = lookup(xss_match_statement.value, "text_transformation", [])
 
                         content {
-                          priority = lookup(text_transformation.value, "priority")
-                          type     = lookup(text_transformation.value, "type")
+                          priority = lookup(text_transformation.value, "priority", null)
+                          type     = lookup(text_transformation.value, "type", null)
                         }
                       }
                     }
@@ -375,8 +375,8 @@ resource "aws_wafv2_web_acl" "this" {
                     for_each = lookup(statement.value, "byte_match_statement", [])
 
                     content {
-                      positional_constraint = lookup(byte_match_statement.value, "positional_constraint")
-                      search_string         = lookup(byte_match_statement.value, "search_string")
+                      positional_constraint = lookup(byte_match_statement.value, "positional_constraint", null)
+                      search_string         = lookup(byte_match_statement.value, "search_string", null)
 
                       dynamic "field_to_match" {
                         for_each = lookup(byte_match_statement.value, "field_to_match", [])
@@ -391,11 +391,11 @@ resource "aws_wafv2_web_acl" "this" {
                       }
 
                       dynamic "text_transformation" {
-                        for_each = lookup(byte_match_statement.value, "text_transformation")
+                        for_each = lookup(byte_match_statement.value, "text_transformation", [])
 
                         content {
-                          priority = lookup(text_transformation.value, "priority")
-                          type     = lookup(text_transformation.value, "type")
+                          priority = lookup(text_transformation.value, "priority", null)
+                          type     = lookup(text_transformation.value, "type", null)
                         }
                       }
                     }
@@ -417,15 +417,15 @@ resource "aws_wafv2_web_acl" "this" {
                     for_each = lookup(statement.value, "ip_set_reference_statement", [])
 
                     content {
-                      arn = lookup(ip_set_reference_statement.value, "arn")
+                      arn = lookup(ip_set_reference_statement.value, "arn", null)
 
                       dynamic "ip_set_forwarded_ip_config" {
                         for_each = lookup(ip_set_reference_statement.value, "ip_set_forwarded_ip_config", [])
 
                         content {
-                          fallback_behavior = lookup(ip_set_forwarded_ip_config.value, "fallback_behavior")
-                          header_name       = lookup(ip_set_forwarded_ip_config.value, "header_name")
-                          position          = lookup(ip_set_forwarded_ip_config.value, "position")
+                          fallback_behavior = lookup(ip_set_forwarded_ip_config.value, "fallback_behavior", null)
+                          header_name       = lookup(ip_set_forwarded_ip_config.value, "header_name", null)
+                          position          = lookup(ip_set_forwarded_ip_config.value, "position", null)
                         }
                       }
                     }
@@ -435,8 +435,8 @@ resource "aws_wafv2_web_acl" "this" {
                     for_each = lookup(statement.value, "byte_match_statement", [])
 
                     content {
-                      positional_constraint = lookup(byte_match_statement.value, "positional_constraint")
-                      search_string         = lookup(byte_match_statement.value, "search_string")
+                      positional_constraint = lookup(byte_match_statement.value, "positional_constraint", null)
+                      search_string         = lookup(byte_match_statement.value, "search_string", null)
 
                       dynamic "field_to_match" {
                         for_each = lookup(byte_match_statement.value, "field_to_match", [])
@@ -465,11 +465,11 @@ resource "aws_wafv2_web_acl" "this" {
                       }
 
                       dynamic "text_transformation" {
-                        for_each = lookup(byte_match_statement.value, "text_transformation")
+                        for_each = lookup(byte_match_statement.value, "text_transformation", [])
 
                         content {
-                          priority = lookup(text_transformation.value, "priority")
-                          type     = lookup(text_transformation.value, "type")
+                          priority = lookup(text_transformation.value, "priority", null)
+                          type     = lookup(text_transformation.value, "type", null)
                         }
                       }
                     }
@@ -483,8 +483,8 @@ resource "aws_wafv2_web_acl" "this" {
             for_each = lookup(statement.value, "managed_rule_group_statement", [])
 
             content {
-              name        = lookup(managed_rule_group_statement.value, "name")
-              vendor_name = lookup(managed_rule_group_statement.value, "vendor_name")
+              name        = lookup(managed_rule_group_statement.value, "name", null)
+              vendor_name = lookup(managed_rule_group_statement.value, "vendor_name", null)
 
               dynamic "rule_action_override" {
                 for_each = lookup(managed_rule_group_statement.value, "rule_action_override", [])
@@ -526,8 +526,8 @@ resource "aws_wafv2_web_acl" "this" {
                             for_each = lookup(statement.value, "byte_match_statement", [])
 
                             content {
-                              positional_constraint = lookup(byte_match_statement.value, "positional_constraint")
-                              search_string         = lookup(byte_match_statement.value, "search_string")
+                              positional_constraint = lookup(byte_match_statement.value, "positional_constraint", null)
+                              search_string         = lookup(byte_match_statement.value, "search_string", null)
 
                               dynamic "field_to_match" {
                                 for_each = lookup(byte_match_statement.value, "field_to_match", [])
@@ -542,11 +542,11 @@ resource "aws_wafv2_web_acl" "this" {
                               }
 
                               dynamic "text_transformation" {
-                                for_each = lookup(byte_match_statement.value, "text_transformation")
+                                for_each = lookup(byte_match_statement.value, "text_transformation", [])
 
                                 content {
-                                  priority = lookup(text_transformation.value, "priority")
-                                  type     = lookup(text_transformation.value, "type")
+                                  priority = lookup(text_transformation.value, "priority", null)
+                                  type     = lookup(text_transformation.value, "type", null)
                                 }
                               }
                             }
@@ -572,8 +572,8 @@ resource "aws_wafv2_web_acl" "this" {
                     for_each = lookup(statement.value, "byte_match_statement", [])
 
                     content {
-                      positional_constraint = lookup(byte_match_statement.value, "positional_constraint")
-                      search_string         = lookup(byte_match_statement.value, "search_string")
+                      positional_constraint = lookup(byte_match_statement.value, "positional_constraint", null)
+                      search_string         = lookup(byte_match_statement.value, "search_string", null)
 
                       dynamic "field_to_match" {
                         for_each = lookup(byte_match_statement.value, "field_to_match", [])
@@ -590,11 +590,11 @@ resource "aws_wafv2_web_acl" "this" {
                       }
 
                       dynamic "text_transformation" {
-                        for_each = lookup(byte_match_statement.value, "text_transformation")
+                        for_each = lookup(byte_match_statement.value, "text_transformation", [])
 
                         content {
-                          priority = lookup(text_transformation.value, "priority")
-                          type     = lookup(text_transformation.value, "type")
+                          priority = lookup(text_transformation.value, "priority", null)
+                          type     = lookup(text_transformation.value, "type", null)
                         }
                       }
                     }
