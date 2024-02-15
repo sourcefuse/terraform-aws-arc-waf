@@ -34,9 +34,17 @@ variable "web_acl_scope" {
 }
 
 variable "web_acl_custom_response_body" {
-  type        = any
+  type = list(object({
+    key          = string
+    content      = string
+    content_type = string
+  }))
   description = "Defines custom response bodies that can be referenced by custom_response actions"
   default     = []
+  validation {
+    condition     = length([for custom_response_body in var.web_acl_custom_response_body : true if contains(["TEXT_PLAIN", "TEXT_HTML", "APPLICATION_JSON"], custom_response_body.content_type)]) == length(var.web_acl_custom_response_body)
+    error_message = "Make sure that for all objects, the content_type has one of these values: \"TEXT_PLAIN\", \"TEXT_HTML\", \"APPLICATION_JSON\" "
+  }
 }
 
 variable "web_acl_default_action" {
@@ -57,6 +65,22 @@ variable "web_acl_rules" {
   type        = any
   description = "Rule blocks used to identify the web requests that you want to allow, block, or count"
   default     = []
+  validation {
+    condition     = length([for rule in var.web_acl_rules : true if lookup(rule, "name", null) != null]) == length(var.web_acl_rules)
+    error_message = "name is a required attribute"
+  }
+  validation {
+    condition     = length([for rule in var.web_acl_rules : true if lookup(rule, "priority", null) != null]) == length(var.web_acl_rules)
+    error_message = "priority is a required attribute"
+  }
+  validation {
+    condition     = length([for rule in var.web_acl_rules : true if lookup(rule, "statement", null) != null]) == length(var.web_acl_rules)
+    error_message = "statement is a required attribute"
+  }
+  validation {
+    condition     = length([for rule in var.web_acl_rules : true if lookup(rule, "visibility_config", null) != null]) == length(var.web_acl_rules)
+    error_message = "visibility_config is a required attribute"
+  }
 }
 
 variable "association_resource_arns" {
