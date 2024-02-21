@@ -54,7 +54,7 @@ waf/
     - **bucket**: Bucket name where the terraform state will reside
     - **dynamodb_table**: Lock table so there are not duplicate tfplans in the mix
     - **encrypt**: Encrypt all traffic to and from the backend
-  
+
 4. Execute Terraform Commands
   - After defining your main configuration, navigate to the directory containing your Terraform files and run the following commands:
 
