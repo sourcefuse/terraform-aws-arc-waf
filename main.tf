@@ -569,18 +569,18 @@ resource "aws_wafv2_web_acl" "this" {
 
                 content {
                   dynamic "ip_set_reference_statement" {
-                    for_each = lookup(statement.value, "ip_set_reference_statement", [])
+                    for_each = try(statement.value.ip_set_reference_statement, [])
 
                     content {
-                      arn = lookup(ip_set_reference_statement.value, "arn")
+                      arn = ip_set_reference_statement.value.arn
 
                       dynamic "ip_set_forwarded_ip_config" {
-                        for_each = lookup(ip_set_reference_statement.value, "ip_set_forwarded_ip_config", [])
+                        for_each = try(ip_set_reference_statement.value.ip_set_forwarded_ip_config, [])
 
                         content {
-                          fallback_behavior = lookup(ip_set_forwarded_ip_config.value, "fallback_behavior")
-                          header_name       = lookup(ip_set_forwarded_ip_config.value, "header_name")
-                          position          = lookup(ip_set_forwarded_ip_config.value, "position")
+                          fallback_behavior = try(ip_set_forwarded_ip_config.value.fallback_behavior)
+                          header_name       = try(ip_set_forwarded_ip_config.value.header_name)
+                          position          = try(ip_set_forwarded_ip_config.value.position)
                         }
                       }
                     }
