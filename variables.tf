@@ -113,3 +113,21 @@ variable "ip_set" {
   EOF
   default     = []
 }
+
+################################################################
+## logging configuration
+################################################################
+variable "logging_config" {
+  type = object({
+    enabled           = optional(bool, false)
+    log_group_prefix  = string
+    retention_in_days = optional(number, 7)
+  })
+  description = "Configuration for WAF logging to CloudWatch Logs"
+  default     = null
+
+  validation {
+    condition     = var.logging_config == null || contains([0, 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653], var.logging_config.retention_in_days)
+    error_message = "Log retention must be one of the valid CloudWatch Logs retention values: 0 (never expire), 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653"
+  }
+}
