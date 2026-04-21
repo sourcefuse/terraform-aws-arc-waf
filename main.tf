@@ -22,7 +22,7 @@ resource "aws_wafv2_web_acl" "this" {
   name        = var.web_acl_name
   description = var.web_acl_description
   scope       = var.web_acl_scope
-
+  rule_json   = var.web_acl_rule_json
   default_action {
     dynamic "allow" {
       for_each = var.web_acl_default_action == "allow" ? [1] : []
@@ -52,7 +52,11 @@ resource "aws_wafv2_web_acl" "this" {
   }
 
   dynamic "rule" {
-    for_each = var.web_acl_rules
+    for_each = {
+      for rule_key in sort(keys(var.web_acl_rules)) :
+      format("%03d-%s", lookup(var.web_acl_rules[rule_key], "priority", 999), rule_key) => var.web_acl_rules[rule_key]
+      if var.web_acl_rule_json == null
+    }
 
     content {
       name     = lookup(rule.value, "name", null)
@@ -288,6 +292,38 @@ resource "aws_wafv2_web_acl" "this" {
                                 for_each = lookup(regex_match_statement.value, "field_to_match", [])
 
                                 content {
+                                  dynamic "body" {
+                                    for_each = [
+                                      for body in lookup(field_to_match.value, "body", []) : body
+                                      if lookup(body, "oversize_handling", null) == null
+                                    ]
+
+                                    content {}
+                                  }
+
+                                  dynamic "body" {
+                                    for_each = [
+                                      for body in lookup(field_to_match.value, "body", []) : body
+                                      if lookup(body, "oversize_handling", null) != null
+                                    ]
+
+                                    content {
+                                      oversize_handling = body.value.oversize_handling
+                                    }
+                                  }
+
+                                  dynamic "query_string" {
+                                    for_each = lookup(field_to_match.value, "query_string", [])
+
+                                    content {}
+                                  }
+
+                                  dynamic "uri_path" {
+                                    for_each = lookup(field_to_match.value, "uri_path", [])
+
+                                    content {}
+                                  }
+
                                   dynamic "single_header" {
                                     for_each = lookup(field_to_match.value, "single_header", [])
 
@@ -400,6 +436,143 @@ resource "aws_wafv2_web_acl" "this" {
                       }
                     }
                   }
+
+                  dynamic "or_statement" {
+                    for_each = lookup(statement.value, "or_statement", [])
+
+                    content {
+                      dynamic "statement" {
+                        for_each = lookup(or_statement.value, "statement", [])
+
+                        content {
+                          dynamic "ip_set_reference_statement" {
+                            for_each = lookup(statement.value, "ip_set_reference_statement", [])
+
+                            content {
+                              arn = lookup(ip_set_reference_statement.value, "arn", null)
+
+                              dynamic "ip_set_forwarded_ip_config" {
+                                for_each = lookup(ip_set_reference_statement.value, "ip_set_forwarded_ip_config", [])
+
+                                content {
+                                  fallback_behavior = lookup(ip_set_forwarded_ip_config.value, "fallback_behavior", null)
+                                  header_name       = lookup(ip_set_forwarded_ip_config.value, "header_name", null)
+                                  position          = lookup(ip_set_forwarded_ip_config.value, "position", null)
+                                }
+                              }
+                            }
+                          }
+
+                          dynamic "byte_match_statement" {
+                            for_each = lookup(statement.value, "byte_match_statement", [])
+
+                            content {
+                              positional_constraint = lookup(byte_match_statement.value, "positional_constraint", null)
+                              search_string         = lookup(byte_match_statement.value, "search_string", null)
+
+                              dynamic "field_to_match" {
+                                for_each = lookup(byte_match_statement.value, "field_to_match", [])
+
+                                content {
+                                  dynamic "uri_path" {
+                                    for_each = lookup(field_to_match.value, "uri_path", [])
+
+                                    content {}
+                                  }
+
+                                  dynamic "query_string" {
+                                    for_each = lookup(field_to_match.value, "query_string", [])
+
+                                    content {}
+                                  }
+
+                                  dynamic "single_header" {
+                                    for_each = lookup(field_to_match.value, "single_header", [])
+
+                                    content {
+                                      name = lookup(single_header.value, "name", null)
+                                    }
+                                  }
+                                }
+                              }
+
+                              dynamic "text_transformation" {
+                                for_each = lookup(byte_match_statement.value, "text_transformation", [])
+
+                                content {
+                                  priority = lookup(text_transformation.value, "priority", null)
+                                  type     = lookup(text_transformation.value, "type", null)
+                                }
+                              }
+                            }
+                          }
+
+                          dynamic "regex_match_statement" {
+                            for_each = lookup(statement.value, "regex_match_statement", [])
+
+                            content {
+                              regex_string = lookup(regex_match_statement.value, "regex_string", null)
+
+                              dynamic "field_to_match" {
+                                for_each = lookup(regex_match_statement.value, "field_to_match", [])
+
+                                content {
+                                  dynamic "body" {
+                                    for_each = [
+                                      for body in lookup(field_to_match.value, "body", []) : body
+                                      if lookup(body, "oversize_handling", null) == null
+                                    ]
+
+                                    content {}
+                                  }
+
+                                  dynamic "body" {
+                                    for_each = [
+                                      for body in lookup(field_to_match.value, "body", []) : body
+                                      if lookup(body, "oversize_handling", null) != null
+                                    ]
+
+                                    content {
+                                      oversize_handling = body.value.oversize_handling
+                                    }
+                                  }
+
+                                  dynamic "query_string" {
+                                    for_each = lookup(field_to_match.value, "query_string", [])
+
+                                    content {}
+                                  }
+
+                                  dynamic "uri_path" {
+                                    for_each = lookup(field_to_match.value, "uri_path", [])
+
+                                    content {}
+                                  }
+
+                                  dynamic "single_header" {
+                                    for_each = lookup(field_to_match.value, "single_header", [])
+
+                                    content {
+                                      name = lookup(single_header.value, "name", null)
+                                    }
+                                  }
+                                }
+                              }
+
+                              dynamic "text_transformation" {
+                                for_each = lookup(regex_match_statement.value, "text_transformation", [])
+
+                                content {
+                                  priority = lookup(text_transformation.value, "priority", null)
+                                  type     = lookup(text_transformation.value, "type", null)
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -474,6 +647,69 @@ resource "aws_wafv2_web_acl" "this" {
                       }
                     }
                   }
+
+                  dynamic "regex_match_statement" {
+                    for_each = lookup(statement.value, "regex_match_statement", [])
+
+                    content {
+                      regex_string = lookup(regex_match_statement.value, "regex_string", null)
+
+                      dynamic "field_to_match" {
+                        for_each = lookup(regex_match_statement.value, "field_to_match", [])
+
+                        content {
+                          dynamic "body" {
+                            for_each = [
+                              for body in lookup(field_to_match.value, "body", []) : body
+                              if lookup(body, "oversize_handling", null) == null
+                            ]
+
+                            content {}
+                          }
+
+                          dynamic "body" {
+                            for_each = [
+                              for body in lookup(field_to_match.value, "body", []) : body
+                              if lookup(body, "oversize_handling", null) != null
+                            ]
+
+                            content {
+                              oversize_handling = body.value.oversize_handling
+                            }
+                          }
+
+                          dynamic "uri_path" {
+                            for_each = lookup(field_to_match.value, "uri_path", [])
+
+                            content {}
+                          }
+
+                          dynamic "query_string" {
+                            for_each = lookup(field_to_match.value, "query_string", [])
+
+                            content {}
+                          }
+
+                          dynamic "single_header" {
+                            for_each = lookup(field_to_match.value, "single_header", [])
+
+                            content {
+                              name = lookup(single_header.value, "name", null)
+                            }
+                          }
+                        }
+                      }
+
+                      dynamic "text_transformation" {
+                        for_each = lookup(regex_match_statement.value, "text_transformation", [])
+
+                        content {
+                          priority = lookup(text_transformation.value, "priority", null)
+                          type     = lookup(text_transformation.value, "type", null)
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -505,6 +741,14 @@ resource "aws_wafv2_web_acl" "this" {
 
                     content {
                       allow {}
+                    }
+                  }
+
+                  dynamic "action_to_use" {
+                    for_each = try(rule_action_override.value.action, null) == "block" ? [1] : []
+
+                    content {
+                      block {}
                     }
                   }
                 }

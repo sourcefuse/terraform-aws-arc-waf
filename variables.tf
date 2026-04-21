@@ -83,6 +83,12 @@ variable "web_acl_rules" {
   }
 }
 
+variable "web_acl_rule_json" {
+  type        = string
+  description = "Optional raw JSON array of WAF rules to pass through via rule_json"
+  default     = null
+}
+
 variable "association_resource_arns" {
   type        = list(string)
   description = <<-EOF
