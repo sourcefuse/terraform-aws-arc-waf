@@ -22,6 +22,10 @@
 
 Creates AWS WAFv2 web ACLs with managed rule groups, custom rules, IP sets, and resource associations for CloudFront or regional resources.
 
+## Architecture
+
+![Architecture Diagram](./static/arch.png)
+
 ## What It Does
 
 - WAFv2 web ACL with REGIONAL or CLOUDFRONT scope
