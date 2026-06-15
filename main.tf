@@ -2,15 +2,16 @@
 ## defaults
 ################################################################
 terraform {
-  required_version = ">= 1.3, < 2.0.0"
+  required_version = "~> 1.3, < 2.0.0"
 
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 4.0"
+      version = ">= 5.0, < 7.0"
     }
   }
 }
+
 
 ################################################################
 ## web acl
@@ -919,4 +920,69 @@ resource "aws_wafv2_ip_set" "this" {
   tags = merge(var.tags, tomap({
     Name = each.value.name
   }))
+}
+
+################################################################
+## logging configuration
+################################################################
+data "aws_region" "current" {
+  count = var.logging_config.enabled ? 1 : 0
+}
+
+data "aws_caller_identity" "current" {
+  count = var.logging_config.enabled ? 1 : 0
+}
+
+resource "aws_cloudwatch_log_group" "waf_logs" {
+  count = var.logging_config.enabled ? 1 : 0
+
+  name              = "aws-waf-logs-${var.logging_config.log_group_prefix}"
+  retention_in_days = var.logging_config.retention_in_days
+
+  tags = merge(var.tags, tomap({
+    Name = "aws-waf-logs-${var.logging_config.log_group_prefix}"
+  }))
+}
+
+data "aws_iam_policy_document" "waf_logs" {
+  count = var.logging_config.enabled ? 1 : 0
+
+  version = "2012-10-17"
+  statement {
+    effect = "Allow"
+    principals {
+      identifiers = ["delivery.logs.amazonaws.com"]
+      type        = "Service"
+    }
+    actions   = ["logs:CreateLogStream", "logs:PutLogEvents"]
+    resources = ["${aws_cloudwatch_log_group.waf_logs[0].arn}:*"]
+    condition {
+      test     = "ArnLike"
+      values   = ["arn:aws:logs:${data.aws_region.current[0].region}:${data.aws_caller_identity.current[0].account_id}:*"]
+      variable = "aws:SourceArn"
+    }
+    condition {
+      test     = "StringEquals"
+      values   = [tostring(data.aws_caller_identity.current[0].account_id)]
+      variable = "aws:SourceAccount"
+    }
+  }
+}
+
+resource "aws_cloudwatch_log_resource_policy" "waf_logs" {
+  count = var.logging_config.enabled ? 1 : 0
+
+  policy_document = data.aws_iam_policy_document.waf_logs[0].json
+  policy_name     = "webacl-policy-${var.logging_config.log_group_prefix}"
+}
+
+resource "aws_wafv2_web_acl_logging_configuration" "this" {
+  count = var.logging_config.enabled && var.create_web_acl ? 1 : 0
+
+  log_destination_configs = [aws_cloudwatch_log_group.waf_logs[0].arn]
+  resource_arn            = aws_wafv2_web_acl.this[0].arn
+
+  depends_on = [
+    aws_cloudwatch_log_resource_policy.waf_logs
+  ]
 }

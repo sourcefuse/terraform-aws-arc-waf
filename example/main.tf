@@ -2,12 +2,12 @@
 ## defaults
 ################################################################################
 terraform {
-  required_version = ">= 1.3.0"
+  required_version = "~> 1.3, < 2.0.0"
 
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 5.0"
+      version = ">= 5.0, < 7.0"
     }
   }
 }
@@ -39,6 +39,13 @@ module "waf" {
   web_acl_description    = "Terraform managed Web ACL Configuration"
   web_acl_scope          = "REGIONAL"
   web_acl_default_action = "block"
+
+  logging_config = {
+    enabled           = true
+    log_group_prefix  = "my-app-prod"
+    retention_in_days = 30
+  }
+
   web_acl_visibility_config = {
     metric_name = "${var.namespace}-${var.environment}-waf-web-acl"
   }

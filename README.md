@@ -94,14 +94,14 @@ The complete inputs/outputs reference is auto-generated below.
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3, < 2.0.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.3, < 2.0.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.0, < 7.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.8.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.21.0 |
 
 ## Modules
 
@@ -111,9 +111,15 @@ No modules.
 
 | Name | Type |
 |------|------|
+| [aws_cloudwatch_log_group.waf_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group) | resource |
+| [aws_cloudwatch_log_resource_policy.waf_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_resource_policy) | resource |
 | [aws_wafv2_ip_set.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/wafv2_ip_set) | resource |
 | [aws_wafv2_web_acl.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/wafv2_web_acl) | resource |
 | [aws_wafv2_web_acl_association.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/wafv2_web_acl_association) | resource |
+| [aws_wafv2_web_acl_logging_configuration.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/wafv2_web_acl_logging_configuration) | resource |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_iam_policy_document.waf_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 
 ## Inputs
 
@@ -122,6 +128,7 @@ No modules.
 | <a name="input_association_resource_arns"></a> [association\_resource\_arns](#input\_association\_resource\_arns) | The Amazon Resource Name (ARN) of the resource to associate with the web ACL.<br>This must be an ARN of an Application Load Balancer, an Amazon API Gateway stage, or an Amazon Cognito User Pool. | `list(string)` | `[]` | no |
 | <a name="input_create_web_acl"></a> [create\_web\_acl](#input\_create\_web\_acl) | A Boolean indicates whether to create WAF Web ACL or not | `bool` | `true` | no |
 | <a name="input_ip_set"></a> [ip\_set](#input\_ip\_set) | Configuration for WAFv2 IP Set.<br>  * name: A friendly name of the IP set.<br>  * description: A friendly description of the IP set. Default is "Terraform managed IP Set configuration."<br>  * scope: Specifies whether this is for an AWS CloudFront distribution or for a regional application. Valid values are CLOUDFRONT or REGIONAL. Default is "REGIONAL."<br>  * ip\_address\_version: Specify IPV4 or IPV6. Valid values are IPV4 or IPV6. Default is "IPV4."<br>  * addresses: Contains an array of strings that specifies zero or more IP addresses or blocks of IP addresses. All addresses must be specified using Classless Inter-Domain Routing (CIDR) notation. WAF supports all IPv4 and IPv6 CIDR ranges except for /0. | <pre>list(object({<br>    name               = string<br>    description        = optional(string, "Terraform managed IP Set configuration")<br>    scope              = optional(string, "REGIONAL")<br>    ip_address_version = optional(string, "IPV4")<br>    addresses          = optional(list(string), [])<br>  }))</pre> | `[]` | no |
+| <a name="input_logging_config"></a> [logging\_config](#input\_logging\_config) | Configuration for WAF logging to CloudWatch Logs | <pre>object({<br>    enabled           = optional(bool, false)<br>    log_group_prefix  = string<br>    retention_in_days = optional(number, 7)<br>  })</pre> | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to assign to the resource. If configured with a provider default\_tags configuration block present, tags with matching keys will overwrite those defined at the provider-level. | `map(string)` | `{}` | no |
 | <a name="input_web_acl_custom_response_body"></a> [web\_acl\_custom\_response\_body](#input\_web\_acl\_custom\_response\_body) | Defines custom response bodies that can be referenced by custom\_response actions | <pre>list(object({<br>    key          = string<br>    content      = string<br>    content_type = string<br>  }))</pre> | `[]` | no |
 | <a name="input_web_acl_default_action"></a> [web\_acl\_default\_action](#input\_web\_acl\_default\_action) | Action to perform if none of the rules contained in the WebACL match. Options are `allow` or `block` | `string` | n/a | yes |
@@ -139,6 +146,10 @@ No modules.
 | <a name="output_capacity"></a> [capacity](#output\_capacity) | Web ACL capacity units (WCUs) currently being used by this web ACL. |
 | <a name="output_id"></a> [id](#output\_id) | The ID of the WAF WebACL. |
 | <a name="output_ip_set_arn"></a> [ip\_set\_arn](#output\_ip\_set\_arn) | The IP Set ARN |
+| <a name="output_log_group_arn"></a> [log\_group\_arn](#output\_log\_group\_arn) | The ARN of the CloudWatch Log Group for WAF logs |
+| <a name="output_log_group_name"></a> [log\_group\_name](#output\_log\_group\_name) | The name of the CloudWatch Log Group for WAF logs |
+| <a name="output_log_resource_policy_id"></a> [log\_resource\_policy\_id](#output\_log\_resource\_policy\_id) | The ID of the CloudWatch log resource policy |
+| <a name="output_logging_configuration_id"></a> [logging\_configuration\_id](#output\_logging\_configuration\_id) | The ID of the WAF logging configuration |
 | <a name="output_tags_all"></a> [tags\_all](#output\_tags\_all) | Map of tags assigned to the resource, including those inherited from the provider default\_tags configuration block. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
